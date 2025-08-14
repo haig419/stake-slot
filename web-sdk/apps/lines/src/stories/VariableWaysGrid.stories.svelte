@@ -3,10 +3,21 @@ import { defineMeta } from '@storybook/addon-svelte-csf';
 
 import { VariableWaysGrid } from '@stake/variable-ways';
 
+const { Story } = defineMeta({
+    title: 'VariableWays/VariableWaysGrid',
+    component: VariableWaysGrid,
+    parameters: {
+        docs: { description: { component: 'Spin uses Math SDK ways evaluation for accurate results.' } }
+    },
+
+
+import { VariableWaysGrid } from '@stake/variable-ways';
+
 
 const { Story } = defineMeta({
     title: 'VariableWays/VariableWaysGrid',
     component: VariableWaysGrid,
+
     args: {
         reelCount: 6,
         minRows: 3,
@@ -29,6 +40,10 @@ import { onMount } from 'svelte';
 
 import { VariableWaysGrid, spin, finishEvaluation, spinStore } from '@stake/variable-ways';
 
+
+
+import { VariableWaysGrid, spin, finishEvaluation, spinStore } from '@stake/variable-ways';
+
 import { VariableWaysGrid } from '@stake/variable-ways';
 
 
@@ -43,6 +58,7 @@ export let gap: number;
 
 let reels: string[][] = [];
   
+
 function generateReels(reelsCount: number, min: number, max: number): string[][] {
     return Array.from({ length: reelsCount }, () => {
         const rows = Math.floor(Math.random() * (max - min + 1)) + min;
@@ -60,7 +76,9 @@ async function handleSpin() {
     await spin();
     await finishEvaluation();
 
+
     reels = generateReels(args.reelCount, args.minRows, args.maxRows);
+
 
 }
 
@@ -81,8 +99,10 @@ onMount(() => {
     </div>
     <VariableWaysGrid reels={$spinStore.reels} cellSize={args.cellSize} reelGap={args.gap} />
 
+
     <button on:click={() => randomize(args)}>Randomize</button>
     <VariableWaysGrid reels={reels} cellSize={args.cellSize} reelGap={args.gap} />
+
 
 </div>
 {/snippet}

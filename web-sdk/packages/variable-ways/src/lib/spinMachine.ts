@@ -1,7 +1,12 @@
 
 import { writable, get } from 'svelte/store';
+import { evaluateVariableWays } from '@stake/math-sdk';
+
+
+import { writable, get } from 'svelte/store';
 
 import { writable } from 'svelte/store';
+
 
 
 const symbols = ['A', 'K', 'Q', 'J', '10', '9'];
@@ -12,6 +17,21 @@ function generateReels(count = 6, minRows = 3, maxRows = 6): string[][] {
     return Array.from({ length: rows }, () => symbols[Math.floor(Math.random() * symbols.length)]);
   });
 }
+
+
+function evaluateWays(reels: string[][]) {
+  const board = reels.map((reel) => reel.map((symbol) => ({ symbol })));
+  const result = evaluateVariableWays({ board } as any);
+  return {
+    totalWin: result.totalWin ?? 0,
+    wins: (result.wins ?? []).map((w: any) => ({
+      symbol: w.symbol,
+      count: w.count,
+      payout: w.payout,
+    })),
+  };
+}
+
 
 
 function evaluateWays(reels: string[][]) {
@@ -28,6 +48,7 @@ function evaluateWays(reels: string[][]) {
   }
   return { totalWin: 0, wins: [] };
 }
+
 
 
 export type SpinState = 'Idle' | 'Spinning' | 'Evaluating' | 'ShowingWin';
@@ -67,8 +88,14 @@ export async function finishEvaluation(win?: { totalWin: number; wins: WinDetail
   const result = win ?? evaluateWays(get(spinStore).reels);
   spinStore.update((s) => ({ ...s, state: 'ShowingWin', lastWin: result }));
 
+
+export async function finishEvaluation(win?: { totalWin: number; wins: WinDetail[] }) {
+  const result = win ?? evaluateWays(get(spinStore).reels);
+  spinStore.update((s) => ({ ...s, state: 'ShowingWin', lastWin: result }));
+
 export async function finishEvaluation(win: { totalWin: number; wins: WinDetail[] }) {
   spinStore.update((s) => ({ ...s, state: 'ShowingWin', lastWin: win }));
+
 
   await new Promise((resolve) => setTimeout(resolve, 1500));
   spinStore.update((s) => ({ ...s, state: 'Idle' }));

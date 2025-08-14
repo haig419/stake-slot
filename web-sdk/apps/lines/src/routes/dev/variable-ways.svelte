@@ -7,7 +7,11 @@
 
     await finishEvaluation();
 
+
+    await finishEvaluation();
+
     await finishEvaluation({ totalWin: 0, wins: [] });
+
 
   }
 </script>
@@ -19,6 +23,17 @@
   </div>
   <VariableWaysGrid reels={$spinStore.reels} />
   {#if $spinStore.lastWin.totalWin > 0}
+
+    <div class="wins">
+      <div>Total Win: {$spinStore.lastWin.totalWin}</div>
+      <ul>
+        {#each $spinStore.lastWin.wins as w}
+          <li>{w.symbol} x{w.count} = {w.payout}</li>
+        {/each}
+      </ul>
+    </div>
+  {/if}
+
     <div>Total Win: {$spinStore.lastWin.totalWin}</div>
   {/if}
 
@@ -44,6 +59,7 @@
   <VariableWaysGrid {reels} />
 
 
+
 </div>
 
 <style>
@@ -62,9 +78,11 @@
   }
 </style>
 
+
 </style>
 
 </script>
 
 <VariableWaysGrid />
+
 

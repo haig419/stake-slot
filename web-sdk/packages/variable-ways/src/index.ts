@@ -7,3 +7,6 @@ export * from "./lib/spinMachine";
 export * from "./lib/spinMachine";
 
 
+export * from "./lib/spinMachine";
+
+
