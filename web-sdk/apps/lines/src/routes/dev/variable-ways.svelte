@@ -4,7 +4,11 @@
 
   async function handleSpin() {
     await spin();
+
+    await finishEvaluation();
+
     await finishEvaluation({ totalWin: 0, wins: [] });
+
   }
 </script>
 
@@ -17,6 +21,7 @@
   {#if $spinStore.lastWin.totalWin > 0}
     <div>Total Win: {$spinStore.lastWin.totalWin}</div>
   {/if}
+
 
   import { VariableWaysGrid } from "@stake/variable-ways";
 
@@ -37,6 +42,7 @@
 <div class="dev">
   <button on:click={randomize}>Randomize</button>
   <VariableWaysGrid {reels} />
+
 
 </div>
 
