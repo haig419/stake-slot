@@ -1,4 +1,5 @@
 <script lang="ts">
+codex/locate-slot-grid-files-and-stories-8sgwyf
   export let reels: string[][] = [];
   export let reelGap: number = 8;
   export let maxRows: number = 7;
@@ -65,3 +66,9 @@
     background: #f0f0f0;
   }
 </style>
+
+  // TODO: implement Variable Ways grid component
+</script>
+
+<div>VariableWaysGrid placeholder</div>
+
