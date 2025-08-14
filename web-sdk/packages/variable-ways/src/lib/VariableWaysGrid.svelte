@@ -5,6 +5,9 @@
   export let maxRows: number = 7;
   export let cellSize: number = 84;
 
+  export let highlights: Array<{ reel: number; row: number }> = [];
+
+
   const symbols = ['A', 'K', 'Q', 'J', '10', '9'];
 
   function randomReels(count = 6) {
@@ -23,10 +26,17 @@
   class="grid"
   style="--cellSize:{cellSize}px; --gap:{reelGap}px; --maxRows:{maxRows}; grid-template-columns:repeat({reels.length}, 1fr);"
 >
+
+  {#each reels as reel, r}
+    <div class="reel">
+      {#each reel as symbol, row}
+        <div class="cell" class:win={highlights.some((h) => h.reel === r && h.row === row)}>{symbol}</div>
+
   {#each reels as reel}
     <div class="reel">
       {#each reel as symbol}
         <div class="cell">{symbol}</div>
+
       {/each}
     </div>
   {/each}
@@ -65,6 +75,17 @@
   .cell:hover {
     background: #f0f0f0;
   }
+
+  .cell.win {
+    outline: 2px solid var(--win-outline, #55ff99);
+    animation: flash 300ms ease-in-out 3;
+  }
+  @keyframes flash {
+    0%, 100% { filter: none; }
+    50% { filter: brightness(1.5); }
+  }
+</style>
+
 </style>
 
 
@@ -75,4 +96,5 @@
 </script>
 
 <div>VariableWaysGrid placeholder</div>
+
 
