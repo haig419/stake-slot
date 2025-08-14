@@ -1,13 +1,26 @@
 {
+
   "name": "@stake/variable-ways",
+
+  "name": "@stake/tokabu",
+
   "version": "0.0.0",
   "private": true,
   "type": "module",
   "svelte": "./src/lib/VariableWaysGrid.svelte",
   "main": "./src/index.ts",
+
   "dependencies": {
     "@stake/math-sdk": "*"
   },
+
+
+  "dependencies": {
+    "@stake/math-sdk": "*"
+  },
+
+
+
   "scripts": {
     "build": "echo \"variable-ways: nothing to build\""
   }
