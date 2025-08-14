@@ -1,6 +1,5 @@
 <script lang="ts">
   import { VariableWaysGrid } from "@stake/variable-ways";
- codex/locate-slot-grid-files-and-stories-8sgwyf
 
   const symbols = ['A', 'K', 'Q', 'J', '10', '9'];
   let reels: string[][] = [];
