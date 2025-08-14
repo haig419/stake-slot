@@ -1,5 +1,6 @@
 <script lang="ts" module>
 import { defineMeta } from '@storybook/addon-svelte-csf';
+
 import { VariableWaysGrid } from '@stake/variable-ways';
 
 const { Story } = defineMeta({
@@ -8,6 +9,15 @@ const { Story } = defineMeta({
     parameters: {
         docs: { description: { component: 'Spin uses Math SDK ways evaluation for accurate results.' } }
     },
+
+
+import { VariableWaysGrid } from '@stake/variable-ways';
+
+
+const { Story } = defineMeta({
+    title: 'VariableWays/VariableWaysGrid',
+    component: VariableWaysGrid,
+
     args: {
         reelCount: 6,
         minRows: 3,
@@ -27,7 +37,15 @@ const { Story } = defineMeta({
 
 <script lang="ts">
 import { onMount } from 'svelte';
+
 import { VariableWaysGrid, spin, finishEvaluation, spinStore } from '@stake/variable-ways';
+
+
+
+import { VariableWaysGrid, spin, finishEvaluation, spinStore } from '@stake/variable-ways';
+
+import { VariableWaysGrid } from '@stake/variable-ways';
+
 
 const SYMBOLS = ['A', 'K', 'Q', 'J', '10', '9'];
 
@@ -37,6 +55,10 @@ export let maxRows: number;
 export let cellSize: number;
 export let gap: number;
 
+
+let reels: string[][] = [];
+  
+
 function generateReels(reelsCount: number, min: number, max: number): string[][] {
     return Array.from({ length: reelsCount }, () => {
         const rows = Math.floor(Math.random() * (max - min + 1)) + min;
@@ -45,6 +67,7 @@ function generateReels(reelsCount: number, min: number, max: number): string[][]
 }
 
 function randomize(args = { reelCount, minRows, maxRows }) {
+
     const r = generateReels(args.reelCount, args.minRows, args.maxRows);
     spinStore.update((s) => ({ ...s, reels: r }));
 }
@@ -52,6 +75,11 @@ function randomize(args = { reelCount, minRows, maxRows }) {
 async function handleSpin() {
     await spin();
     await finishEvaluation();
+
+
+    reels = generateReels(args.reelCount, args.minRows, args.maxRows);
+
+
 }
 
 onMount(() => {
@@ -61,6 +89,7 @@ onMount(() => {
 
 {#snippet template(args)}
 <div style="display:flex; flex-direction:column; gap:8px; padding:16px;">
+
     <div style="display:flex; gap:8px; align-items:center;">
         <button on:click={() => randomize(args)}>Randomize</button>
         <button on:click={handleSpin}>Spin</button>
@@ -69,6 +98,12 @@ onMount(() => {
         {/if}
     </div>
     <VariableWaysGrid reels={$spinStore.reels} cellSize={args.cellSize} reelGap={args.gap} />
+
+
+    <button on:click={() => randomize(args)}>Randomize</button>
+    <VariableWaysGrid reels={reels} cellSize={args.cellSize} reelGap={args.gap} />
+
+
 </div>
 {/snippet}
 
