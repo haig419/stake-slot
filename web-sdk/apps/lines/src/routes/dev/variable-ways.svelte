@@ -28,3 +28,8 @@
     padding: 1rem;
   }
 </style>
+
+</script>
+
+<VariableWaysGrid />
+
