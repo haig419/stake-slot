@@ -1,151 +1,65 @@
+import { writable, get, type Writable } from "svelte/store";
+import { evaluateWays } from "./evaluateWays";
 
-import { writable, get } from 'svelte/store';
-import { evaluateWays } from './evaluateWays';
+export type State = "Idle" | "Spinning" | "Evaluating" | "ShowingWin";
 
+export type Highlight = { reel: number; row: number };
+export type WinDetail = { symbol: string; count: number; payout: number };
 
-import { writable, get } from 'svelte/store';
-import { evaluateVariableWays } from '@stake/math-sdk';
+export interface SpinState {
+  state: State;
+  reels: string[][];
+  lastWin: { totalWin: number; wins: WinDetail[] };
+  highlights: Highlight[];
+}
 
+const symbols = ["A", "K", "Q", "J", "10", "9"];
 
-import { writable, get } from 'svelte/store';
+function randomReels(reelCount = 6, minRows = 3, maxRows = 6): string[][] {
+  return Array.from({ length: reelCount }, () =>
+    Array.from(
+      { length: Math.floor(Math.random() * (maxRows - minRows + 1)) + minRows },
+      () => symbols[Math.floor(Math.random() * symbols.length)]
+    )
+  );
+}
 
-import { writable } from 'svelte/store';
-
-
-
-
-const symbols = ['A', 'K', 'Q', 'J', '10', '9'];
-
-function generateReels(count = 6, minRows = 3, maxRows = 6): string[][] {
-  return Array.from({ length: count }, () => {
-    const rows = Math.floor(Math.random() * (maxRows - minRows + 1)) + minRows;
-    return Array.from({ length: rows }, () => symbols[Math.floor(Math.random() * symbols.length)]);
+function createSpinStore(): Writable<SpinState> {
+  return writable<SpinState>({
+    state: "Idle",
+    reels: randomReels(),
+    lastWin: { totalWin: 0, wins: [] },
+    highlights: [],
   });
 }
 
+export const spinStore = createSpinStore();
 
-
-function evaluateWays(reels: string[][]) {
-  const board = reels.map((reel) => reel.map((symbol) => ({ symbol })));
-  const result = evaluateVariableWays({ board } as any);
-  return {
-    totalWin: result.totalWin ?? 0,
-    wins: (result.wins ?? []).map((w: any) => ({
-      symbol: w.symbol,
-      count: w.count,
-      payout: w.payout,
-    })),
-  };
-}
-
-
-
-function evaluateWays(reels: string[][]) {
-  const target = reels[0]?.[0];
-  if (!target) return { totalWin: 0, wins: [] };
-  let count = 0;
-  for (const reel of reels) {
-    if (reel.includes(target)) count++;
-    else break;
-  }
-  if (count >= 3) {
-    const payout = count * 2;
-    return { totalWin: payout, wins: [{ symbol: target, count, payout }] };
-  }
-  return { totalWin: 0, wins: [] };
-}
-
-
-
-
-export type SpinState = 'Idle' | 'Spinning' | 'Evaluating' | 'ShowingWin';
-
-export interface WinDetail {
-  symbol: string;
-  count: number;
-  payout: number;
-}
-
-export interface Highlight {
-  reel: number;
-  row: number;
-}
-
-
-export interface SpinMachineState {
-  state: SpinState;
-  reels: string[][];
-  lastWin: { totalWin: number; wins: WinDetail[] };
-
-  highlights: Highlight[];
-
-}
-
-const initialReels = generateReels();
-
-export const spinStore = writable<SpinMachineState>({
-  state: 'Idle',
-  reels: initialReels,
-
-  lastWin: { totalWin: 0, wins: [] },
-  highlights: []
-
-  lastWin: { totalWin: 0, wins: [] }
-
-});
-
-export async function spin() {
-  spinStore.update(() => ({
-    state: 'Spinning',
-    reels: generateReels(),
-
+export async function spin(): Promise<void> {
+  spinStore.update((s) => ({
+    ...s,
+    state: "Spinning",
+    reels: randomReels(),
     lastWin: { totalWin: 0, wins: [] },
-    highlights: []
-
-    lastWin: { totalWin: 0, wins: [] }
-
+    highlights: [],
   }));
-  await new Promise((resolve) => setTimeout(resolve, 900));
-  spinStore.update((s) => ({ ...s, state: 'Evaluating' }));
+  // simulate reel spin time
+  await new Promise((r) => setTimeout(r, 900));
+  spinStore.update((s) => ({ ...s, state: "Evaluating" }));
 }
-
 
 export async function finishEvaluation(
   win?: { totalWin: number; wins: WinDetail[] },
   highlights?: Highlight[]
-) {
-  if (!win) {
-    const result = evaluateWays(get(spinStore).reels);
-    spinStore.update((s) => ({
-      ...s,
-      state: 'ShowingWin',
-      lastWin: { totalWin: result.totalWin, wins: result.wins },
-      highlights: result.highlights,
-    }));
-  } else {
-    spinStore.update((s) => ({
-      ...s,
-      state: 'ShowingWin',
-      lastWin: win,
-      highlights: highlights ?? [],
-    }));
-  }
-
-
-export async function finishEvaluation(win?: { totalWin: number; wins: WinDetail[] }) {
-  const result = win ?? evaluateWays(get(spinStore).reels);
-  spinStore.update((s) => ({ ...s, state: 'ShowingWin', lastWin: result }));
-
-
-export async function finishEvaluation(win?: { totalWin: number; wins: WinDetail[] }) {
-  const result = win ?? evaluateWays(get(spinStore).reels);
-  spinStore.update((s) => ({ ...s, state: 'ShowingWin', lastWin: result }));
-
-export async function finishEvaluation(win: { totalWin: number; wins: WinDetail[] }) {
-  spinStore.update((s) => ({ ...s, state: 'ShowingWin', lastWin: win }));
-
-
-
-  await new Promise((resolve) => setTimeout(resolve, 1500));
-  spinStore.update((s) => ({ ...s, state: 'Idle' }));
+): Promise<void> {
+  const reels = get(spinStore).reels;
+  const result = win ?? evaluateWays(reels);
+  spinStore.update((s) => ({
+    ...s,
+    state: "ShowingWin",
+    lastWin: { totalWin: result.totalWin, wins: result.wins },
+    highlights: highlights ?? ("highlights" in result ? (result as any).highlights : []),
+  }));
+  await new Promise((r) => setTimeout(r, 1500));
+  spinStore.update((s) => ({ ...s, state: "Idle" }));
 }
